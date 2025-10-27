@@ -1,6 +1,6 @@
-# Projeto PesquisaUNB - API (Grupo Fuxi 2025.2) 
+# Projeto Vitra - API (Grupo Fuxi 2025.2) 
 
-Este repositório contém o código-fonte da API (Django + Postgres) do projeto PesquisaUNB.
+Este repositório contém o código-fonte da API (Django + Postgres) do projeto Vitra.
 
 ## 🔗 Links
 - **Repositório da Documentação:** [2025.2-Fuxi-Docs](https://github.com/fga-eps-mds/2025.2-Fuxi-Docs)
