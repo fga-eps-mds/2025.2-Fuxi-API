@@ -130,6 +130,7 @@ class UserSerializer(serializers.ModelSerializer):
             profile_data = validated_data.pop('company_profile')
             Company.objects.filter(user=instance).update(**profile_data)
 
+        instance.save()
         return instance
 
 class LoginSerializer(serializers.Serializer):
