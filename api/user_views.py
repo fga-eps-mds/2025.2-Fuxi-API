@@ -9,7 +9,7 @@ from .serializers import (
     CollaboratorProfileSerializer,
     CompanyProfileSerializer,
     LoginSerializer,
-    UserSerializer
+    UserSerializer,
 )
 
 
@@ -102,3 +102,4 @@ class LogoutView(APIView):
                 return Response({"detail": "Token não encontrado."}, status=status.HTTP_400_BAD_REQUEST)
 
             return Response({"detail": "Logout realizado com sucesso."}, status=status.HTTP_200_OK)
+    

@@ -2,7 +2,7 @@ import re
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from .models import User, Researcher, Collaborator, Company
+from .models import User, Researcher, Collaborator, Company, Research
 from datetime import date
 
 class ResearcherProfileSerializer(serializers.ModelSerializer):
@@ -145,3 +145,12 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Usuário inativo.")
         data['user'] = user
         return data
+
+class ResearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Research
+        fields = ['id', 'researcher', 'createdDate', 'title', 'description', 'status', 'knowledge_area', 'keywords', 'campus']
+        read_only_fields = ['researcher', 'createdDate']
+
+
+    

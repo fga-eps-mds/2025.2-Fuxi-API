@@ -61,3 +61,13 @@ class Company(models.Model):
     fantasyName = models.CharField(max_length=100)
     cnpj = models.CharField(max_length=100)
     size = models.CharField(max_length=100)
+
+class Research(models.Model):
+    researcher = models.ForeignKey(Researcher, on_delete=models.CASCADE, related_name="researches")
+    createdDate = models.DateField(auto_now_add=True)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    status = models.CharField(max_length=100)
+    knowledge_area = models.CharField(max_length=100)
+    keywords = models.CharField(max_length=200)
+    campus = models.CharField(max_length=100)
