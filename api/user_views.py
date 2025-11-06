@@ -85,10 +85,21 @@ class ProfileView(APIView):
 
     def get(self, request):
         user = request.user
+
+        profile = None
+        if user.user_type == 'researcher':
+            profile = ResearcherProfileSerializer(Researcher.objects.get(user=user)).data
+        elif user.user_type == 'collaborator':
+            profile = CollaboratorProfileSerializer(Researcher.objects.get(user=user)).data
+        elif user.user_type == 'company':
+            profile = CompanyProfileSerializer(Researcher.objects.get(user=user)).data
+
         return Response({
+            "id": user.id,
             "email": user.email,
             "user_type": user.user_type,
-            "is_authenticated": True
+            "is_authenticated": True,
+            "profile": profile
         })
 
 class LogoutView(APIView):
