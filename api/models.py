@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.postgres.fields import ArrayField
 
 class CustomUserManager(UserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -69,5 +70,5 @@ class Research(models.Model):
     description = models.TextField()
     status = models.CharField(max_length=100)
     knowledge_area = models.CharField(max_length=100)
-    keywords = models.CharField(max_length=200)
+    keywords = ArrayField(models.CharField(max_length=100), blank=True, default=list)
     campus = models.CharField(max_length=100)

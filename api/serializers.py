@@ -151,6 +151,3 @@ class ResearchSerializer(serializers.ModelSerializer):
         model = Research
         fields = ['id', 'researcher', 'createdDate', 'title', 'description', 'status', 'knowledge_area', 'keywords', 'campus']
         read_only_fields = ['researcher', 'createdDate']
-
-
-    
