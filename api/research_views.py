@@ -37,15 +37,15 @@ class ResearchListCreateView(generics.ListCreateAPIView):
         researcher_name = f"{researcher.firstName} {researcher.surname}".strip()
 
 
-        authors = self.request.data.get("authors", [])
-        if isinstance(authors, str):
+        members = self.request.data.get("members", [])
+        if isinstance(members, str):
             import json
-            authors = json.loads(authors)
+            members = json.loads(members)
 
-        if researcher_name not in authors:
-            authors = [researcher_name] + authors
+        if researcher_name not in members:
+            members = [researcher_name] + members
 
-        serializer.save(researcher=researcher, authors=authors)
+        serializer.save(researcher=researcher, members=members)
 
 
 class ResearchDetailView(generics.RetrieveUpdateDestroyAPIView):

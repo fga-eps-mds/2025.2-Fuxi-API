@@ -149,5 +149,5 @@ class LoginSerializer(serializers.Serializer):
 class ResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research
-        fields = ['id', 'researcher', 'createdDate', 'title', 'description', 'status', 'knowledge_area', 'keywords', 'authors', 'campus']
+        fields = ['id', 'researcher', 'createdDate', 'title', 'description', 'status', 'knowledge_area', 'keywords', 'members', 'campus']
         read_only_fields = ['researcher', 'createdDate']

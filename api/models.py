@@ -71,5 +71,5 @@ class Research(models.Model):
     status = models.CharField(max_length=100)
     knowledge_area = models.CharField(max_length=100)
     keywords = ArrayField(models.CharField(max_length=100), blank=True, default=list)
-    authors = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    members = ArrayField(models.CharField(max_length=100), blank=True, default=list)
     campus = models.CharField(max_length=100)
