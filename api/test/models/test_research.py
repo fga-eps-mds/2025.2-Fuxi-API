@@ -26,7 +26,7 @@ class ResearchModelTestCase(TestCase):
             description="This is a test description for the research.",
             status="ongoing",
             knowledge_area="test area",
-            keywords="test, research",
+            keywords=["test", "research"],
             campus="Test Campus"
         )
 
@@ -46,5 +46,5 @@ class ResearchModelTestCase(TestCase):
         self.assertEqual(research.description, "This is a test description for the research.")
         self.assertEqual(research.status, "ongoing")
         self.assertEqual(research.knowledge_area, "test area")
-        self.assertEqual(research.keywords, "test, research")
+        self.assertEqual(research.keywords, ["test", "research"])
         self.assertEqual(research.campus, "Test Campus")
