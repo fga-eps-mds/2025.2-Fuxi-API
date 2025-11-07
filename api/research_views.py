@@ -33,7 +33,19 @@ class ResearchListCreateView(generics.ListCreateAPIView):
             raise PermissionDenied("O usuário não possui permissões para criar uma pesquisa!")
 
         researcher = user.researcher_profile
-        serializer.save(researcher=researcher)
+
+        researcher_name = f"{researcher.firstName} {researcher.surname}".strip()
+
+
+        authors = self.request.data.get("authors", [])
+        if isinstance(authors, str):
+            import json
+            authors = json.loads(authors)
+
+        if researcher_name not in authors:
+            authors = [researcher_name] + authors
+
+        serializer.save(researcher=researcher, authors=authors)
 
 
 class ResearchDetailView(generics.RetrieveUpdateDestroyAPIView):

@@ -90,9 +90,9 @@ class ProfileView(APIView):
         if user.user_type == 'researcher':
             profile = ResearcherProfileSerializer(Researcher.objects.get(user=user)).data
         elif user.user_type == 'collaborator':
-            profile = CollaboratorProfileSerializer(Researcher.objects.get(user=user)).data
+            profile = CollaboratorProfileSerializer(Collaborator.objects.get(user=user)).data
         elif user.user_type == 'company':
-            profile = CompanyProfileSerializer(Researcher.objects.get(user=user)).data
+            profile = CompanyProfileSerializer(Company.objects.get(user=user)).data
 
         return Response({
             "id": user.id,
