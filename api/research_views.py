@@ -12,6 +12,11 @@ class ResearchListPublicView(generics.ListAPIView):
     serializer_class = ResearchSerializer
     permission_classes = [AllowAny]
 
+class ResearchDetailPublicView(generics.RetrieveAPIView):
+    queryset = Research.objects.all()
+    serializer_class = ResearchSerializer
+    permission_classes = [AllowAny]
+
 
 class ResearchListCreateView(generics.ListCreateAPIView):
     queryset = Research.objects.all()
