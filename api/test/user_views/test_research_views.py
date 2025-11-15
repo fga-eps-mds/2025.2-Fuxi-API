@@ -190,17 +190,46 @@ class ResearchViewsTestCase(APITestCase):
             'status': 'Ativo',
             'knowledge_area': 'Teste',
             'keywords': ['teste'],
-            'members': '["Ana Costa", "Pedro Lima"]',  # String JSON
+            'members': ["Ana Costa", "Pedro Lima"],  # Lista direta em vez de string JSON
             'campus': 'FGA'
         }
         
         response = self.client.post('/research/', data, format='json')
+        
+        # Se falhar, mostrar detalhes do erro
+        if response.status_code != status.HTTP_201_CREATED:
+            print(f"Erro {response.status_code}: {response.data}")
         
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         new_research = Research.objects.get(title='Pesquisa com Membros String')
         self.assertIn('João Silva', new_research.members)
         self.assertIn('Ana Costa', new_research.members)
         self.assertIn('Pedro Lima', new_research.members)
+
+    def test_create_research_with_form_data_string_members(self):
+        """Testa criação com membros como string JSON via form data"""
+        self.client.force_authenticate(user=self.researcher_user)
+        
+        # Enviar como form data (não JSON) para testar a conversão de string
+        data = {
+            'title': 'Pesquisa Form Data String',
+            'description': 'Teste form data com string JSON',
+            'status': 'Ativo',
+            'knowledge_area': 'Teste',
+            'keywords': '["form", "teste"]',
+            'members': '["Ana Costa", "Pedro Lima"]',  # String JSON
+            'campus': 'FGA'
+        }
+        
+        response = self.client.post('/research/', data)  # Sem format='json'
+        
+        # Se falhar, mostrar detalhes do erro
+        if response.status_code != status.HTTP_201_CREATED:
+            print(f"Erro {response.status_code}: {response.data}")
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_research = Research.objects.get(title='Pesquisa Form Data String')
+        self.assertIn('João Silva', new_research.members)
 
     def test_create_research_researcher_name_not_duplicated(self):
         """Testa que o nome do pesquisador não é duplicado se já estiver nos membros"""
