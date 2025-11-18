@@ -162,4 +162,4 @@ class FavoriteResearchSerializer(serializers.ModelSerializer):
 class FavoriteResearchCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoriteResearch
-        fields = ['research']
+        fields = ['id','research']
