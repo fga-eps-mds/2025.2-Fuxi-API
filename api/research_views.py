@@ -1,10 +1,10 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
-from .models import Research
+from rest_framework.exceptions import PermissionDenied, ValidationError
+from .models import Research, FavoriteResearch
 from .serializers import (
-    ResearchSerializer
+    ResearchSerializer, FavoriteResearchSerializer, FavoriteResearchCreateSerializer
 )
 
 class ResearchListPublicView(generics.ListAPIView):

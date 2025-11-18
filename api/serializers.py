@@ -2,7 +2,7 @@ import re
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from .models import User, Researcher, Collaborator, Company, Research
+from .models import User, Researcher, Collaborator, Company, Research, FavoriteResearch
 from datetime import date
 
 class ResearcherProfileSerializer(serializers.ModelSerializer):
@@ -151,3 +151,15 @@ class ResearchSerializer(serializers.ModelSerializer):
         model = Research
         fields = ['id', 'researcher', 'createdDate', 'title', 'description', 'status', 'knowledge_area', 'keywords', 'members', 'campus']
         read_only_fields = ['researcher', 'createdDate']
+
+class FavoriteResearchSerializer(serializers.ModelSerializer):
+    research = ResearchSerializer(read_only=True)
+
+    class Meta:
+        model = FavoriteResearch
+        fields = ['id', 'research', 'created_at']
+
+class FavoriteResearchCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavoriteResearch
+        fields = ['research']

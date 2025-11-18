@@ -73,3 +73,14 @@ class Research(models.Model):
     keywords = ArrayField(models.CharField(max_length=100), blank=True, default=list)
     members = ArrayField(models.CharField(max_length=100), blank=True, default=list)
     campus = models.CharField(max_length=100)
+
+class FavoriteResearch(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favorite_researches")
+    research = models.ForeignKey(Research, on_delete=models.CASCADE, related_name="favorited_by")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'research')  # não deixa favoritar duas vezes
+
+    def __str__(self):
+        return f"{self.user.email} → {self.research.title}"
