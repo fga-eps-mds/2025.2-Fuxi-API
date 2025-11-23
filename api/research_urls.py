@@ -1,6 +1,6 @@
 from django.urls import path
 from .research_views import (
-  ResearchListCreateView, ResearchListPublicView, ResearchDetailView, ResearchDetailPublicView
+  ResearchListCreateView, ResearchListPublicView, ResearchDetailView, ResearchDetailPublicView, ResearchSearchView
 )
 
 urlpatterns = [
@@ -8,4 +8,5 @@ urlpatterns = [
     path("<int:pk>/", ResearchDetailView.as_view(), name="research-detail"),
     path("all/", ResearchListPublicView.as_view(), name="research-public-list"),
     path("all/<int:pk>", ResearchDetailPublicView.as_view(), name="research-public-list-detail"),
+    path("search/", ResearchSearchView.as_view(), name="research-search"),
 ]
