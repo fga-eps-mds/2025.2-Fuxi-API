@@ -84,3 +84,10 @@ class FavoriteResearch(models.Model):
 
     def __str__(self):
         return f"{self.user.email} → {self.research.title}"
+
+class Demand(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="demands")
+    createdDate = models.DateField(auto_now_add=True)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    knowledge_area = models.CharField(max_length=100)
