@@ -2,6 +2,12 @@ services:
   djangoapp:
     container_name: djangoapp
     build: .
+    command: >
+      sh -c "
+        python manage.py makemigrations api &&
+        python manage.py migrate &&
+        python manage.py runserver 0.0.0.0:8000
+      "
     ports:
       - "8000:8000"
     environment:
@@ -21,7 +27,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 

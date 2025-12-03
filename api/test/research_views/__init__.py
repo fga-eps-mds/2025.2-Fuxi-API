@@ -1,0 +1,1 @@
+# __init__.py file for research_views test package
