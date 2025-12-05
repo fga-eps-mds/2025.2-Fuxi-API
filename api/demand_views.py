@@ -71,3 +71,37 @@ class DemandDetailView(generics.RetrieveUpdateDestroyAPIView):
             raise PermissionDenied("Você não tem permissão para apagar esta pesquisa.")
 
         instance.delete()
+
+
+class DemandSearchView(generics.ListAPIView):
+    queryset = Demand.objects.all()
+    serializer_class = DemandSerializer
+    permission_classes = [AllowAny]  
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        params = self.request.query_params
+
+        title = params.get("title")
+        description = params.get("description")
+        knowledge_area = params.get("knowledge_area")
+        company_name = params.get("company")
+
+        if not any([title, description, knowledge_area, company_name]):
+            return Demand.objects.none()
+
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+
+        if description:
+            queryset = queryset.filter(description__icontains=description)
+
+        if knowledge_area:
+            queryset = queryset.filter(knowledge_area__icontains=knowledge_area)
+
+        if company_name:
+            queryset = queryset.filter(
+                Q(members__contains=[company_name])
+            )
+
+        return queryset
