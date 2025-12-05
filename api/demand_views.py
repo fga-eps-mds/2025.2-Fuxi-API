@@ -100,8 +100,6 @@ class DemandSearchView(generics.ListAPIView):
             queryset = queryset.filter(knowledge_area__icontains=knowledge_area)
 
         if company_name:
-            queryset = queryset.filter(
-                Q(members__contains=[company_name])
-            )
+            queryset = queryset.filter(company__fantasyName__icontains=company_name)
 
         return queryset
