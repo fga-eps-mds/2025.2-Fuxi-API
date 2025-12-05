@@ -147,10 +147,19 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 class ResearchSerializer(serializers.ModelSerializer):
+    members = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=User.objects.all(), required=False
+    )
+
     class Meta:
         model = Research
         fields = ['id', 'researcher', 'createdDate', 'title', 'description', 'status', 'knowledge_area', 'keywords', 'members', 'campus']
         read_only_fields = ['researcher', 'createdDate']
+
+    def validate_members(self, value):
+        if not isinstance(value, list):
+            raise serializers.ValidationError("members deve ser um array.")
+        return value
 
 class FavoriteResearchSerializer(serializers.ModelSerializer):
     research = ResearchSerializer(read_only=True)

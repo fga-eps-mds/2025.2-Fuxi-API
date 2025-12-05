@@ -71,7 +71,7 @@ class Research(models.Model):
     status = models.CharField(max_length=100)
     knowledge_area = models.CharField(max_length=100)
     keywords = ArrayField(models.CharField(max_length=100), blank=True, default=list)
-    members = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    members = models.ManyToManyField(User, related_name="research_member_of")
     campus = models.CharField(max_length=100)
 
 class FavoriteResearch(models.Model):

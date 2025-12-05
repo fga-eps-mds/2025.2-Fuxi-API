@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, ValidationError
-from .models import Research, FavoriteResearch
+from .models import User, Research, FavoriteResearch
 from django.db.models import Q
 from .serializers import (
     ResearchSerializer, FavoriteResearchSerializer, FavoriteResearchCreateSerializer
@@ -35,23 +35,27 @@ class ResearchListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         user = self.request.user
 
-        if user.user_type != 'researcher':
-            raise PermissionDenied("O usuário não possui permissões para criar uma pesquisa!")
+        if user.user_type != "researcher":
+            raise PermissionDenied("Apenas pesquisadores podem criar pesquisas.")
 
         researcher = user.researcher_profile
 
-        researcher_name = f"{researcher.firstName} {researcher.surname}".strip()
+        research = serializer.save(researcher=researcher)
 
+        research.members.add(user)
 
-        members = self.request.data.get("members", [])
-        if isinstance(members, str):
-            import json
-            members = json.loads(members)
+        members_ids = self.request.data.get("members", [])
 
-        if researcher_name not in members:
-            members = [researcher_name] + members
+        if isinstance(members_ids, list):
+            for uid in members_ids:
+                try:
+                    u = User.objects.get(id=uid)
+                    if u.user_type != "company":
+                        research.members.add(u)
+                except User.DoesNotExist:
+                    pass 
 
-        serializer.save(researcher=researcher, members=members)
+        research.save()
 
 
 class ResearchDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -69,8 +73,31 @@ class ResearchDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         if research.researcher != user.researcher_profile:
             raise PermissionDenied("Você não tem permissão para editar esta pesquisa.")
+        
+        instance = serializer.save()
 
-        serializer.save()
+        if 'members' in self.request.data:
+            members_ids = self.request.data.get('members', [])
+
+            if not isinstance(members_ids, list):
+                raise ValidationError({"members": "members deve ser uma lista de IDs."})
+
+            new_members = []
+            for uid in members_ids:
+                try:
+                    u = User.objects.get(pk=uid)
+                    if u.user_type in ("researcher", "collaborator"):
+                        new_members.append(u)
+                except User.DoesNotExist:
+                    raise ValidationError({"members": f"Usuário com ID {uid} não existe."})
+                    continue
+
+            creator_user = research.researcher.user 
+            if creator_user not in new_members:
+                new_members.insert(0, creator_user)
+
+            instance.members.set(new_members)
+            instance.save()
 
     def perform_destroy(self, instance):
         user = self.request.user
