@@ -152,8 +152,17 @@ class ResearchSearchView(generics.ListAPIView):
             queryset = queryset.filter(campus__iexact=campus)
 
         if researcher_name:
-            queryset = queryset.filter(
-                Q(members__contains=[researcher_name])
-            )
+            terms = researcher_name.split()
+
+            q = Q()
+            for term in terms:
+                q &= (
+                    Q(members__researcher_profile__firstName__icontains=term) |
+                    Q(members__researcher_profile__surname__icontains=term) |
+                    Q(members__collaborator_profile__firstName__icontains=term) |
+                    Q(members__collaborator_profile__surname__icontains=term)
+                )
+
+            queryset = queryset.filter(q).distinct()
 
         return queryset
