@@ -153,8 +153,23 @@ class ResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Research
-        fields = ['id', 'researcher', 'createdDate', 'title', 'description', 'status', 'knowledge_area', 'keywords', 'members', 'campus']
+        fields = [
+            'id',
+            'researcher',
+            'sponsoring_company',
+            'createdDate',
+            'title',
+            'description',
+            'status',
+            'knowledge_area',
+            'keywords',
+            'members',
+            'campus'
+        ]
         read_only_fields = ['researcher', 'createdDate']
+        extra_kwargs = {
+            'sponsoring_company': {'required': False, 'allow_null': True}
+        }
 
     def validate_members(self, value):
         if not isinstance(value, list):

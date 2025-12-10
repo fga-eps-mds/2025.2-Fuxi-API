@@ -126,8 +126,9 @@ class ResearchSearchView(generics.ListAPIView):
         keywords = params.getlist("keyword")
         campus = params.get("campus")
         researcher_name = params.get("researcher")
+        sponsoring_company = params.get("company")
 
-        if not any([title, description, status, knowledge_area, keywords, campus, researcher_name]):
+        if not any([title, description, status, knowledge_area, keywords, campus, researcher_name, sponsoring_company]):
             return Research.objects.none()
 
         if title:
@@ -141,6 +142,9 @@ class ResearchSearchView(generics.ListAPIView):
 
         if knowledge_area:
             queryset = queryset.filter(knowledge_area__icontains=knowledge_area)
+        
+        if sponsoring_company:
+            queryset = queryset.filter(sponsoring_company__fantasyName__icontains=sponsoring_company)
 
         if keywords:
             kw_filter = Q()

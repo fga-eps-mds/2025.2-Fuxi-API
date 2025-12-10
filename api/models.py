@@ -65,6 +65,7 @@ class Company(models.Model):
 
 class Research(models.Model):
     researcher = models.ForeignKey(Researcher, on_delete=models.CASCADE, related_name="researches")
+    sponsoring_company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, blank=True, related_name="sponsored_researches")
     createdDate = models.DateField(auto_now_add=True)
     title = models.CharField(max_length=200)
     description = models.TextField()
