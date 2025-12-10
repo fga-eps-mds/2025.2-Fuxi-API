@@ -116,7 +116,7 @@ class ResearchSearchView(generics.ListAPIView):
     permission_classes = [AllowAny]  
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = Research.objects.select_related('sponsoring_company', 'researcher').all()
         params = self.request.query_params
 
         title = params.get("title")
@@ -142,6 +142,8 @@ class ResearchSearchView(generics.ListAPIView):
 
         if knowledge_area:
             queryset = queryset.filter(knowledge_area__icontains=knowledge_area)
+
+        print(f"Buscando empresa: '{sponsoring_company}'")
         
         if sponsoring_company:
             queryset = queryset.filter(sponsoring_company__fantasyName__icontains=sponsoring_company)
