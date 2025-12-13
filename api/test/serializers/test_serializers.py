@@ -25,19 +25,34 @@ class SerializerValidationTestCase(TestCase):
             user=self.researcher_user, firstName="Test", surname="User", birthDate=date(1995, 5, 10), campus="Gama"
         )
 
-    # Testes para validação de data de nascimento
-    def test_birthdate_in_the_future_fails(self):
-        """Verifica se a validação falha para datas de nascimento no futuro."""
+    def test_researcher_birthdate_in_the_future_fails(self):
+        """Verifica se a validação falha para datas de nascimento no futuro para pesquisadores."""
         future_date = (date.today() + timedelta(days=1)).strftime('%Y-%m-%d')
-        serializer = ResearcherProfileSerializer(data={'birthDate': future_date})
+        serializer = ResearcherProfileSerializer(data={'birthDate': future_date, 'firstName': 'Test', 'surname': 'Test', 'campus': 'Test'})
         with self.assertRaises(ValidationError) as cm:
             serializer.is_valid(raise_exception=True)
         self.assertIn("A data de nascimento deve ser uma data passada.", str(cm.exception))
 
-    def test_user_under_18_fails(self):
-        """Verifica se a validação falha para usuários com menos de 18 anos."""
+    def test_collaborator_birthdate_in_the_future_fails(self):
+        """Verifica se a validação falha para datas de nascimento no futuro para colaboradores."""
+        future_date = (date.today() + timedelta(days=1)).strftime('%Y-%m-%d')
+        serializer = CollaboratorProfileSerializer(data={'birthDate': future_date, 'firstName': 'Test', 'surname': 'Test', 'category': 'Test'})
+        with self.assertRaises(ValidationError) as cm:
+            serializer.is_valid(raise_exception=True)
+        self.assertIn("A data de nascimento deve ser uma data passada.", str(cm.exception))
+
+    def test_researcher_under_18_fails(self):
+        """Verifica se a validação falha para pesquisadores com menos de 18 anos."""
         ten_years_ago = date(date.today().year - 10, 1, 1).strftime('%Y-%m-%d')
-        serializer = CollaboratorProfileSerializer(data={'birthDate': ten_years_ago})
+        serializer = ResearcherProfileSerializer(data={'birthDate': ten_years_ago, 'firstName': 'Test', 'surname': 'Test', 'campus': 'Test'})
+        with self.assertRaises(ValidationError) as cm:
+            serializer.is_valid(raise_exception=True)
+        self.assertIn("O usuário deve ser maior de 18 anos.", str(cm.exception))
+
+    def test_collaborator_under_18_fails(self):
+        """Verifica se a validação falha para colaboradores com menos de 18 anos."""
+        ten_years_ago = date(date.today().year - 10, 1, 1).strftime('%Y-%m-%d')
+        serializer = CollaboratorProfileSerializer(data={'birthDate': ten_years_ago, 'firstName': 'Test', 'surname': 'Test', 'category': 'Test'})
         with self.assertRaises(ValidationError) as cm:
             serializer.is_valid(raise_exception=True)
         self.assertIn("O usuário deve ser maior de 18 anos.", str(cm.exception))
@@ -196,8 +211,63 @@ class SerializerValidationTestCase(TestCase):
         serializer = CompanyProfileSerializer(data=data)
         self.assertTrue(serializer.is_valid(raise_exception=True))
 
-    def test_valid_birthdate_passes(self):
-        """Verifica se uma data de nascimento válida passa na validação."""
-        valid_date = "1995-05-10"
-        serializer = ResearcherProfileSerializer(data={'birthDate': valid_date, 'firstName': 'a', 'surname': 'b', 'campus': 'c'})
         self.assertTrue(serializer.is_valid(raise_exception=True))
+
+    def test_create_user_without_profile_data(self):
+        """Testa a criação de um usuário sem dados de perfil."""
+        data = {
+            "email": "no.profile@test.com", "password": "password123", "user_type": "collaborator",
+        }
+        serializer = UserSerializer(data=data)
+        self.assertTrue(serializer.is_valid(raise_exception=True))
+        user = serializer.save()
+        self.assertFalse(hasattr(user, 'collaborator_profile'))
+
+    def test_update_user_without_profile_data(self):
+        """Testa a atualização de um usuário sem dados de perfil."""
+        update_data = {'email': 'updated@unb.br'}
+        serializer = UserSerializer(instance=self.researcher_user, data=update_data, partial=True)
+        self.assertTrue(serializer.is_valid(raise_exception=True))
+        serializer.save()
+        self.researcher_user.refresh_from_db()
+        self.assertEqual(self.researcher_user.email, "updated@unb.br")
+
+
+class LoginSerializerValidationTestCase(TestCase):
+
+    def setUp(self):
+        self.active_user = User.objects.create_user(
+            email="active@example.com", password="password123", is_active=True
+        )
+        self.inactive_user = User.objects.create_user(
+            email="inactive@example.com", password="password123", is_active=False
+        )
+
+    def test_missing_email_field_fails(self):
+        """Testa se a validação falha se o campo de e-mail estiver faltando."""
+        serializer = LoginSerializer(data={"password": "password123"})
+        with self.assertRaises(ValidationError) as cm:
+            serializer.is_valid(raise_exception=True)
+        self.assertIn("This field is required.", cm.exception.detail['email'])
+
+    def test_missing_password_field_fails(self):
+        """Testa se a validação falha se o campo de senha estiver faltando."""
+        serializer = LoginSerializer(data={"email": "active@example.com"})
+        with self.assertRaises(ValidationError) as cm:
+            serializer.is_valid(raise_exception=True)
+        self.assertIn("This field is required.", cm.exception.detail['password'])
+
+    def test_incorrect_credentials_fails(self):
+        """Testa se a validação falha com credenciais incorretas."""
+        serializer = LoginSerializer(data={"email": "active@example.com", "password": "wrongpassword"})
+        with self.assertRaises(ValidationError) as cm:
+            serializer.is_valid(raise_exception=True)
+        self.assertIn("Credenciais inválidas.", str(cm.exception))
+
+    def test_inactive_user_login_fails(self):
+        """Testa se o login de um usuário inativo falha."""
+        serializer = LoginSerializer(data={"email": "inactive@example.com", "password": "password123"})
+        with self.assertRaises(ValidationError) as cm:
+            serializer.is_valid(raise_exception=True)
+        self.assertIn("Usuário inativo.", str(cm.exception))
+
