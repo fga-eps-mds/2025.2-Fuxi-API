@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import environ
 import os
 from pathlib import Path
 
@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure-e&+xr24qc5f1iq)w&&4==kjd7^b8k@i=0f4#t%6x=k-4)j(u51
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+environ.Env.read_env(BASE_DIR / ".env")
+
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 
 # Application definition
