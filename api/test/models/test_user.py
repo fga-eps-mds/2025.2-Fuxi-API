@@ -103,6 +103,23 @@ class UserModelTestCase(TestCase):
         self.assertEqual(str(user), "testemail@example.com (researcher)")
 
 
-    
+    def test_create_user_no_email(self):
+        with self.assertRaises(ValueError):
+            User.objects.create_user(email="")
 
 
+    def test_create_superuser_not_staff(self):
+        with self.assertRaises(ValueError):
+            User.objects.create_superuser(
+                email="testemail@example.com",
+                password="testpassword",
+                is_staff=False
+            )
+
+    def test_create_superuser_not_superuser(self):
+        with self.assertRaises(ValueError):
+            User.objects.create_superuser(
+                email="testemail@example.com",
+                password="testpassword",
+                is_superuser=False
+            )

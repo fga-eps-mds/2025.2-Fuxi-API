@@ -10,6 +10,8 @@ services:
       "
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
     environment:
       - PG_USER=postgres
       - PG_PASSWORD=postgres

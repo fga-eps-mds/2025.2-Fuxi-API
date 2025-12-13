@@ -1,0 +1,14 @@
+[run]
+branch = True
+source = .
+
+[report]
+show_missing = True
+omit =
+    manage.py
+    test_manage.py
+    core/*
+    */migrations/*
+    */tests/*
+    */test/*
+    */**/__init__.py

@@ -65,13 +65,14 @@ class Company(models.Model):
 
 class Research(models.Model):
     researcher = models.ForeignKey(Researcher, on_delete=models.CASCADE, related_name="researches")
+    sponsoring_company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, blank=True, related_name="sponsored_researches")
     createdDate = models.DateField(auto_now_add=True)
     title = models.CharField(max_length=200)
     description = models.TextField()
     status = models.CharField(max_length=100)
     knowledge_area = models.CharField(max_length=100)
     keywords = ArrayField(models.CharField(max_length=100), blank=True, default=list)
-    members = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    members = models.ManyToManyField(User, related_name="research_member_of")
     campus = models.CharField(max_length=100)
 
 class FavoriteResearch(models.Model):
@@ -84,3 +85,10 @@ class FavoriteResearch(models.Model):
 
     def __str__(self):
         return f"{self.user.email} → {self.research.title}"
+
+class Demand(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="demands")
+    createdDate = models.DateField(auto_now_add=True)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    knowledge_area = models.CharField(max_length=100)
